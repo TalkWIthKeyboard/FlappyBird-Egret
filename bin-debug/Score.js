@@ -19,6 +19,7 @@ var Score = (function (_super) {
         _this.main = main;
         _this.score = score;
         _this.type = type;
+        _this.live = false;
         return _this;
     }
     Score.prototype.makeNumberImg = function (score) {
@@ -26,7 +27,8 @@ var Score = (function (_super) {
         var a = this.score;
         var center = this.position[this.type];
         var numList = a == 0 ? [0] : [];
-        this.live && this.clearNumber();
+        if (!!this.live)
+            this.clearNumber();
         while (a != 0) {
             numList.push(a % 10);
             a = Math.floor(a / 10);
@@ -44,7 +46,7 @@ var Score = (function (_super) {
                 break;
         }
         for (var i = 0; i < this.scoreImgList.length; i++)
-            this.main.addChildAt(this.scoreImgList[i], 4);
+            this.main.addChildAt(this.scoreImgList[i], 3);
         this.live = true;
     };
     Score.prototype.clearNumber = function () {

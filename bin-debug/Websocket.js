@@ -8,7 +8,7 @@ var Websocket = (function () {
         this._socket = new egret.WebSocket();
         this._socket.addEventListener(egret.ProgressEvent.SOCKET_DATA, this.onReceiveMessage, this);
         this._socket.addEventListener(egret.Event.CONNECT, this.onSocketOpen, this);
-        this._socket.connectByUrl("ws://180.160.31.222:5500/");
+        this._socket.connectByUrl("ws://10.0.1.55:5500/");
     }
     Websocket.prototype.workForColumnString = function (str) {
         var column = str.split('?');
@@ -26,14 +26,14 @@ var Websocket = (function () {
         switch (list[0]) {
             case 'start':
                 if (list[1] === '0') {
-                    var ans = [];
-                    var info = list[2].split('/');
-                    for (var i = 0; i < info.length - 1; i++) {
-                        var _a = info[i].split(':'), num = _a[0], position = _a[1];
+                    var ans_1 = [];
+                    var info_1 = list[2].split('/');
+                    for (var i = 0; i < info_1.length - 1; i++) {
+                        var _a = info_1[i].split(':'), num = _a[0], position = _a[1];
                         var _b = position.split('|'), x = _b[0], y = _b[1];
-                        ans.push({ 'num': num, 'x': x, 'y': y });
+                        ans_1.push({ 'num': num, 'x': x, 'y': y });
                     }
-                    this._main.startGame(ans);
+                    this._main.startGame(ans_1);
                 }
                 else {
                     var _c = list[2].split(':'), num = _c[0], position = _c[1];
@@ -42,9 +42,6 @@ var Websocket = (function () {
                     if (this._main.columnOpen)
                         this._main.birdMap.addBird({ 'num': num, 'x': x, 'y': y });
                 }
-                break;
-            case 'jump':
-                this._main.birdMap.jump(list[1]);
                 break;
             case 'dead':
                 if (list[1])
@@ -60,11 +57,22 @@ var Websocket = (function () {
                         this._main.columns.push(columnObj);
                 }
                 break;
+            case 'position':
+                var ans = [];
+                var info = list[1].split('/');
+                for (var i = 0; i < info.length - 1; i++) {
+                    var _f = info[i].split(':'), num = _f[0], position = _f[1];
+                    var _g = position.split('|'), x = _g[0], y = _g[1];
+                    ans.push({ 'num': num, 'x': x, 'y': y });
+                }
+                this._main.birdMap.changePosition(ans);
+                break;
         }
     };
     Websocket.prototype.onSocketOpen = function () {
         var high = Math.floor(Math.random() * 400);
         var width = Math.floor(Math.random() * 200);
+        // let width = 200;
         this.sendMessage("start," + width + "," + high);
     };
     Websocket.prototype.sendMessage = function (message) {

@@ -18,6 +18,7 @@ class Score extends egret.DisplayObjectContainer {
         this.main = main;
         this.score = score;
         this.type = type;
+        this.live = false;
     }
 
     public makeNumberImg(score) {
@@ -26,7 +27,7 @@ class Score extends egret.DisplayObjectContainer {
         let center = this.position[this.type];
         let numList = a == 0 ? [0] : [];
 
-        this.live && this.clearNumber();
+        if (!!this.live) this.clearNumber();
 
         while (a != 0) {
             numList.push(a % 10);
@@ -44,7 +45,8 @@ class Score extends egret.DisplayObjectContainer {
                 this.scoreImgList[2].x = this.scoreImgList[2].x + this.scoreImgList[0].width + center.t * 2;
                 break;
         }
-        for (let i = 0; i < this.scoreImgList.length; i++) this.main.addChildAt(this.scoreImgList[i], 4);
+        for (let i = 0; i < this.scoreImgList.length; i++)
+            this.main.addChildAt(this.scoreImgList[i], 3);
         this.live = true;
     }
 

@@ -9,7 +9,7 @@ class Websocket {
         this._socket = new egret.WebSocket();
         this._socket.addEventListener(egret.ProgressEvent.SOCKET_DATA, this.onReceiveMessage, this);
         this._socket.addEventListener(egret.Event.CONNECT, this.onSocketOpen, this);
-        this._socket.connectByUrl("ws://180.160.31.222:5500/");
+        this._socket.connectByUrl("ws://10.0.1.55:5500/");
     }
 
     private workForColumnString(str: string) {
@@ -45,9 +45,6 @@ class Websocket {
                         this._main.birdMap.addBird({'num': num, 'x': x, 'y': y});
                 }
                 break;
-            case 'jump':
-                this._main.birdMap.jump(list[1]);
-                break;
             case 'dead':
                 if (list[1]) 
                     this._main.birdMap.removeBird(list[1], true);
@@ -61,12 +58,23 @@ class Websocket {
                     if (this._main.columns !== undefined) this._main.columns.push(columnObj);
                 }
                 break;
+            case 'position':
+                let ans = [];
+                let info = list[1].split('/');
+                for (let i = 0; i < info.length - 1; i++) {
+                    let [num, position] = info[i].split(':');
+                    let [x, y] = position.split('|');
+                    ans.push({'num': num, 'x': x, 'y': y});
+                }
+                this._main.birdMap.changePosition(ans);
+                break;
         }
     }
 
     public onSocketOpen() {
         let high = Math.floor(Math.random()*400);
         let width = Math.floor(Math.random()*200);
+        // let width = 200;
         this.sendMessage(`start,${width},${high}`);
     }
 

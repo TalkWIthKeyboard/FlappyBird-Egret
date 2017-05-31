@@ -25,6 +25,7 @@ var Bird = (function (_super) {
         _this.addChild(_this.mc);
         _this.mc.x = x;
         _this.mc.play(-1);
+        _this.type = flag;
         switch (flag) {
             case 0:
                 _this.mc.y = main.measured.stageH / 2 - 80;
@@ -41,7 +42,11 @@ var Bird = (function (_super) {
                 _this.birdBox = new p2.Body({ mass: 1, position: [_this.mc.x + _this.mc.width / 2, _this.mc.y + _this.mc.height / 2] });
                 var boxShape = new p2.Box({ width: _this.mc.width, height: _this.mc.height });
                 _this.birdBox.addShape(boxShape);
+                // 1. 在物理世界添加元素
                 main.world.addBody(_this.birdBox);
+                // 2. 添加点击事件
+                main.stage.addEventListener(egret.TouchEvent.TOUCH_BEGIN, _this.jump, _this);
+                // 3. 物理世界元素和动画世界元素保持同步
                 setInterval(function () {
                     _this.mc.y = _this.birdBox.position[1] - _this.mc.height / 2;
                 }, 1000 * 1 / 60);
@@ -49,10 +54,7 @@ var Bird = (function (_super) {
         }
         return _this;
     }
-    /**
-     * 初始化小鸟
-     * 随机小鸟种类，添加小鸟动画
-     */
+    // 初始化小鸟
     Bird.prototype.addBird = function () {
         var num = parseInt(String(Math.random() * 2 + 1));
         switch (num) {
@@ -68,20 +70,20 @@ var Bird = (function (_super) {
         }
         this.mc = new egret.MovieClip(this.mcf.generateMovieClipData(this.mcValue));
     };
-    /**
-     * 小鸟飞行
-     */
+    // 小鸟的跳跃响应函数
     Bird.prototype.jump = function () {
-        this.main.websocket.sendMessage("jump," + this.id);
-    };
-    Bird.prototype.recJump = function () {
         p2.vec2.add(this.birdBox.force, this.birdBox.force, p2.vec2.fromValues(0, -400));
     };
+    // 获取小鸟的物理对象的id
     Bird.prototype.getBirdBox = function () {
-        return this.birdBox;
+        return this.type === 2 ? this.birdBox : null;
     };
+    // 删除小鸟
     Bird.prototype.removeBird = function (main) {
-        main.world.removeBody(this.birdBox);
+        if (this.type === 2) {
+            main.world.removeBody(this.birdBox);
+            this.main.stage.removeEventListener(egret.TouchEvent.TOUCH_BEGIN, this.jump, this);
+        }
         this.parent.removeChild(this);
     };
     return Bird;

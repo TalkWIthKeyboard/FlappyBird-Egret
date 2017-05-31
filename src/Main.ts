@@ -39,7 +39,10 @@ class Main extends egret.DisplayObjectContainer {
     // 地板
     private floor;
     private columnIndex;
+
     private bird;
+    private birdMap;
+    
     private backGourd;
     private hasWorld = false;
     private world: p2.World;
@@ -52,7 +55,6 @@ class Main extends egret.DisplayObjectContainer {
     private bestScoreImg;
     private scoreTimer;
     private websocket;
-    private birdMap;
     private columns = undefined;
     private columnOpen = false;
 
@@ -206,12 +208,16 @@ class Main extends egret.DisplayObjectContainer {
         // 2.开始接收服务端栏杆数据，并初始化栏杆Map
         this.columnOpen = true;
         this.columns = new Columns(this);
-        // 3.初始化小鸟Map
+        // 3.初始化含有刚体的自己操作的小鸟
+        let len = objList.length;
+        this.bird = new Bird(this, objList[len - 1].x, objList[len - 1].y, objList[len - 1].num, 2);
+        this.addChildAt(this.bird, 1);
+        // 4.初始化小鸟动画Map
         this.birdMap = new Birds(this, objList);
-        // 4.打开物理碰撞检测
+        // 5.打开物理碰撞检测
         this.world.on("beginContact", this.onBeginContact, this);
-        // 5.添加分数计数器和天花板碰撞
-        // 6.在分数计数器中添加小鸟的高度坐标发送
+        // 6.添加分数计数器和天花板碰撞
+        // 7.在分数计数器中添加小鸟的高度坐标发送
         this.scoreTimer = new egret.Timer(100, 0);
         this.scoreTimer.addEventListener(egret.TimerEvent.TIMER, () => {
             if (this.columnIndex !== -1 
@@ -234,8 +240,9 @@ class Main extends egret.DisplayObjectContainer {
      */
     private stopGame(): void {
 
-        // 0.删除所有小鸟
+        // 0.删除所有小鸟动画和刚体小鸟
         this.birdMap.removeAll();
+        this.bird.removeBird(this);
         // 1.删除栏杆图像，刚体；关闭栏杆数据获取；清空栏杆Map
         this.columnOpen = false;
         this.columns.clear();
@@ -250,7 +257,6 @@ class Main extends egret.DisplayObjectContainer {
         this.scoreTimer.reset();
         // 6.关闭物理碰撞检测
         this.world.off("beginContact", null); 
-
         // 7.新建gameOver页面元素
         var gameOver = this.makeBitMap("text_game_over_png", 0, -200, 1.4, 1.4);
         var scorePanel = this.makeBitMap("score_panel_png", 0, 0, 1.6, 1.6);
@@ -261,9 +267,8 @@ class Main extends egret.DisplayObjectContainer {
         this.bestScoreImg.makeNumberImg(this.bestScore);
         restartBtn.touchEnabled = true;    
         this.addChildAt(gameOver, 3);
-        this.addChildAt(scorePanel, 3);
+        this.addChildAt(scorePanel, 2);
         this.addChildAt(restartBtn, 3);  
-
         // 9.添加重新开始按钮的监听事件
         restartBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, (evt:egret.TouchEvent) => {
             this.removeChild(gameOver);
@@ -323,10 +328,8 @@ class Main extends egret.DisplayObjectContainer {
         var bodyA: p2.Body = event.bodyA;
         var bodyB: p2.Body = event.bodyB;
 
-        if (
-            (bodyA.id === this.bird.getBirdBox().id || bodyB.id === this.bird.getBirdBox().id)
-            && !this.birdMap.checkCollide(bodyA, bodyB)
-        ) this.stopGame();
+        if (bodyA.id === this.bird.getBirdBox().id || bodyB.id === this.bird.getBirdBox().id)
+            this.stopGame();
     }
 
     private makeBitMap(picName, px, py, sx, sy) {

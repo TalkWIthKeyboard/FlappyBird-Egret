@@ -176,12 +176,16 @@ var Main = (function (_super) {
         // 2.开始接收服务端栏杆数据，并初始化栏杆Map
         this.columnOpen = true;
         this.columns = new Columns(this);
-        // 3.初始化小鸟Map
+        // 3.初始化含有刚体的自己操作的小鸟
+        var len = objList.length;
+        this.bird = new Bird(this, objList[len - 1].x, objList[len - 1].y, objList[len - 1].num, 2);
+        this.addChildAt(this.bird, 1);
+        // 4.初始化小鸟动画Map
         this.birdMap = new Birds(this, objList);
-        // 4.打开物理碰撞检测
+        // 5.打开物理碰撞检测
         this.world.on("beginContact", this.onBeginContact, this);
-        // 5.添加分数计数器和天花板碰撞
-        // 6.在分数计数器中添加小鸟的高度坐标发送
+        // 6.添加分数计数器和天花板碰撞
+        // 7.在分数计数器中添加小鸟的高度坐标发送
         this.scoreTimer = new egret.Timer(100, 0);
         this.scoreTimer.addEventListener(egret.TimerEvent.TIMER, function () {
             if (_this.columnIndex !== -1
@@ -204,8 +208,9 @@ var Main = (function (_super) {
      */
     Main.prototype.stopGame = function () {
         var _this = this;
-        // 0.删除所有小鸟
+        // 0.删除所有小鸟动画和刚体小鸟
         this.birdMap.removeAll();
+        this.bird.removeBird(this);
         // 1.删除栏杆图像，刚体；关闭栏杆数据获取；清空栏杆Map
         this.columnOpen = false;
         this.columns.clear();
@@ -227,10 +232,10 @@ var Main = (function (_super) {
         // 8.清空顶端得分；更新最后得分与最佳得分图像
         this.scoreImg.clearNumber();
         this.lastScoreImg.makeNumberImg(this.score);
-        this.bestScoreImg.makeNumberImg(this.bestScore);
+        // this.bestScoreImg.makeNumberImg(this.bestScore);
         restartBtn.touchEnabled = true;
         this.addChildAt(gameOver, 3);
-        this.addChildAt(scorePanel, 3);
+        this.addChildAt(scorePanel, 2);
         this.addChildAt(restartBtn, 3);
         // 9.添加重新开始按钮的监听事件
         restartBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, function (evt) {
@@ -286,8 +291,7 @@ var Main = (function (_super) {
     Main.prototype.onBeginContact = function (event) {
         var bodyA = event.bodyA;
         var bodyB = event.bodyB;
-        if ((bodyA.id === this.bird.getBirdBox().id || bodyB.id === this.bird.getBirdBox().id)
-            && !this.birdMap.checkCollide(bodyA, bodyB))
+        if (bodyA.id === this.bird.getBirdBox().id || bodyB.id === this.bird.getBirdBox().id)
             this.stopGame();
     };
     Main.prototype.makeBitMap = function (picName, px, py, sx, sy) {
