@@ -15,7 +15,7 @@ var Birds = (function () {
             var birdNum = objList[i].num;
             var birdX = parseFloat(objList[i].x);
             var birdY = parseFloat(objList[i].y);
-            var bird = new Bird(main, birdX, birdY, birdNum, 1);
+            var bird = new Bird(main, birdX, birdY, birdNum, objList[i].name, 1);
             bird.alpha = 0.5;
             main.addChildAt(bird, 1);
             this.birdList.push(birdNum);
@@ -51,7 +51,7 @@ var Birds = (function () {
     };
     // 其他玩家进入游戏，添加小鸟
     Birds.prototype.addBird = function (obj) {
-        var bird = new Bird(this.main, obj.x, obj.y, obj.num, 1);
+        var bird = new Bird(this.main, obj.x, obj.y, obj.num, obj.name, 1);
         bird.alpha = 0.5;
         this.main.addChildAt(bird, 1);
         this.birdMap.set(obj.num, bird);

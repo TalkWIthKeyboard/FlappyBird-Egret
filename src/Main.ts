@@ -39,10 +39,8 @@ class Main extends egret.DisplayObjectContainer {
     // 地板
     private floor;
     private columnIndex;
-
     private bird;
     private birdMap;
-    
     private backGourd;
     private hasWorld = false;
     private world: p2.World;
@@ -57,6 +55,8 @@ class Main extends egret.DisplayObjectContainer {
     private websocket;
     private columns = undefined;
     private columnOpen = false;
+    private textInput;
+    private birdName;
 
     public constructor() {
         super();
@@ -156,7 +156,7 @@ class Main extends egret.DisplayObjectContainer {
             'stageH':this.stage.stageHeight
         }
 
-        let bird:Bird = new Bird(this, 0, 0, 0, 0);
+        let bird:Bird = new Bird(this, 0, 0, 0, null, 0);
         let btn_start = this.makeBitMap('text_ready_png', 0, -100, 1.4, 1.4);
         let tutorial = this.makeBitMap('tutorial_png', 0, 0, 1, 1);
         tutorial.touchEnabled = true;
@@ -166,14 +166,20 @@ class Main extends egret.DisplayObjectContainer {
         this.addChildAt(bird, 1);
 
         tutorial.addEventListener(egret.TouchEvent.TOUCH_TAP, (evt:egret.TouchEvent) => {
-            this.removeChild(btn_start);
-            this.removeChild(tutorial);
-            this.removeChild(bird);
-            this.websocket = new Websocket(this);            
+            this.birdName = this.textInput.input.text;
+            if (this.birdName !== '' && this.birdName !== '输入名字' && this.birdName.length <= 8) {
+                this.removeChild(btn_start);
+                this.removeChild(tutorial);
+                this.removeChild(bird);
+                this.textInput.remove();
+                this.websocket = new Websocket(this, this.birdName); 
+            } else alert('请先输入名字哦！名字长度不得超过8！');
         }, this);
 
         if (!this.hasWorld) {
             this.createWorld();
+            // 创建名字输入框
+            this.textInput = new TextInput(this, '输入名字', 80, 430);
             setInterval(() => {
                 this.world.step(60 / 1000);
             })
@@ -210,7 +216,7 @@ class Main extends egret.DisplayObjectContainer {
         this.columns = new Columns(this);
         // 3.初始化含有刚体的自己操作的小鸟
         let len = objList.length;
-        this.bird = new Bird(this, objList[len - 1].x, objList[len - 1].y, objList[len - 1].num, 2);
+        this.bird = new Bird(this, objList[len - 1].x, objList[len - 1].y, objList[len - 1].num, objList[len - 1].name, 2);
         this.addChildAt(this.bird, 1);
         // 4.初始化小鸟动画Map
         this.birdMap = new Birds(this, objList);

@@ -129,7 +129,7 @@ var Main = (function (_super) {
             'stageW': this.stage.stageWidth,
             'stageH': this.stage.stageHeight
         };
-        var bird = new Bird(this, 0, 0, 0, 0);
+        var bird = new Bird(this, 0, 0, 0, null, 0);
         var btn_start = this.makeBitMap('text_ready_png', 0, -100, 1.4, 1.4);
         var tutorial = this.makeBitMap('tutorial_png', 0, 0, 1, 1);
         tutorial.touchEnabled = true;
@@ -137,13 +137,21 @@ var Main = (function (_super) {
         this.addChildAt(btn_start, 1);
         this.addChildAt(bird, 1);
         tutorial.addEventListener(egret.TouchEvent.TOUCH_TAP, function (evt) {
-            _this.removeChild(btn_start);
-            _this.removeChild(tutorial);
-            _this.removeChild(bird);
-            _this.websocket = new Websocket(_this);
+            _this.birdName = _this.textInput.input.text;
+            if (_this.birdName !== '' && _this.birdName !== '输入名字' && _this.birdName.length <= 8) {
+                _this.removeChild(btn_start);
+                _this.removeChild(tutorial);
+                _this.removeChild(bird);
+                _this.textInput.remove();
+                _this.websocket = new Websocket(_this, _this.birdName);
+            }
+            else
+                alert('请先输入名字哦！名字长度不得超过8！');
         }, this);
         if (!this.hasWorld) {
             this.createWorld();
+            // 创建名字输入框
+            this.textInput = new TextInput(this, '输入名字', 80, 430);
             setInterval(function () {
                 _this.world.step(60 / 1000);
             });
@@ -178,7 +186,7 @@ var Main = (function (_super) {
         this.columns = new Columns(this);
         // 3.初始化含有刚体的自己操作的小鸟
         var len = objList.length;
-        this.bird = new Bird(this, objList[len - 1].x, objList[len - 1].y, objList[len - 1].num, 2);
+        this.bird = new Bird(this, objList[len - 1].x, objList[len - 1].y, objList[len - 1].num, objList[len - 1].name, 2);
         this.addChildAt(this.bird, 1);
         // 4.初始化小鸟动画Map
         this.birdMap = new Birds(this, objList);
@@ -232,7 +240,7 @@ var Main = (function (_super) {
         // 8.清空顶端得分；更新最后得分与最佳得分图像
         this.scoreImg.clearNumber();
         this.lastScoreImg.makeNumberImg(this.score);
-        // this.bestScoreImg.makeNumberImg(this.bestScore);
+        this.bestScoreImg.makeNumberImg(this.bestScore);
         restartBtn.touchEnabled = true;
         this.addChildAt(gameOver, 3);
         this.addChildAt(scorePanel, 2);

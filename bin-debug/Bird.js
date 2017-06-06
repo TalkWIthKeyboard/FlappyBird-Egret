@@ -14,11 +14,13 @@ var Bird = (function (_super) {
      * @params id 在map中的id
      * @params flag 0 首页动画 1 其他小鸟的动画 2 添加配套刚体的实体
      */
-    function Bird(main, x, y, id, flag) {
+    function Bird(main, x, y, id, name, flag) {
         var _this = _super.call(this) || this;
+        _this.arrow = null;
         var json = RES.getRes('bird_json');
         var img = RES.getRes('bird_png');
         _this.main = main;
+        _this.birdName = name;
         _this.mcf = new egret.MovieClipDataFactory(json, img);
         _this.mcf.enableCache = true;
         _this.addBird();
@@ -34,9 +36,11 @@ var Bird = (function (_super) {
                     .to({ y: main.measured.stageH / 2 - 80 }, 800);
                 break;
             case 1:
+                _this.createArrowAndText(x, y);
                 _this.mc.y = y;
                 break;
             case 2:
+                _this.createArrowAndText(x, y);
                 _this.id = id;
                 _this.mc.y = y;
                 _this.birdBox = new p2.Body({ mass: 1, position: [_this.mc.x + _this.mc.width / 2, _this.mc.y + _this.mc.height / 2] });
@@ -49,6 +53,10 @@ var Bird = (function (_super) {
                 // 3. 物理世界元素和动画世界元素保持同步
                 setInterval(function () {
                     _this.mc.y = _this.birdBox.position[1] - _this.mc.height / 2;
+                    if (_this.arrow) {
+                        _this.arrow.y = _this.mc.y - 10;
+                        _this.text.y = _this.mc.y - 30;
+                    }
                 }, 1000 * 1 / 60);
                 break;
         }
@@ -78,12 +86,27 @@ var Bird = (function (_super) {
     Bird.prototype.getBirdBox = function () {
         return this.type === 2 ? this.birdBox : null;
     };
+    // 创建配套的箭头
+    Bird.prototype.createArrowAndText = function (x, y) {
+        this.text = new egret.TextField();
+        this.text.text = this.birdName;
+        this.text.textColor = 0x000000;
+        this.text.x = x;
+        this.text.y = y - 30;
+        this.arrow = new egret.Bitmap(RES.getRes('arrow_png'));
+        this.arrow.x = x;
+        this.arrow.y = y - 10;
+        this.main.addChild(this.text);
+        this.main.addChild(this.arrow);
+    };
     // 删除小鸟
     Bird.prototype.removeBird = function (main) {
         if (this.type === 2) {
             main.world.removeBody(this.birdBox);
             this.main.stage.removeEventListener(egret.TouchEvent.TOUCH_BEGIN, this.jump, this);
         }
+        this.main.removeChild(this.text);
+        this.main.removeChild(this.arrow);
         this.parent.removeChild(this);
     };
     return Bird;

@@ -4,6 +4,7 @@ class Bird extends egret.DisplayObjectContainer {
     // 小鸟动画
     private mc: egret.MovieClip;
     private mcf: egret.MovieClipDataFactory;
+    private arrow = null;
     private mcValue: string;
     // 小鸟对应的刚体
     private birdBox: p2.Body;
@@ -11,6 +12,8 @@ class Bird extends egret.DisplayObjectContainer {
     private timer: egret.Timer;
     private main;
     private type;
+    private birdName;
+    private text;
     private id;
 
     /**
@@ -19,12 +22,13 @@ class Bird extends egret.DisplayObjectContainer {
      * @params id 在map中的id
      * @params flag 0 首页动画 1 其他小鸟的动画 2 添加配套刚体的实体
      */
-    public constructor(main, x, y, id, flag) {
+    public constructor(main, x, y, id, name, flag) {
         super();
 
         var json = RES.getRes('bird_json');
         var img = RES.getRes('bird_png');
         this.main = main;
+        this.birdName = name;
         this.mcf = new egret.MovieClipDataFactory(json, img);
         this.mcf.enableCache = true;
         this.addBird();
@@ -41,9 +45,11 @@ class Bird extends egret.DisplayObjectContainer {
                     .to({y: main.measured.stageH / 2 - 80}, 800)
                 break;
             case 1:
+                this.createArrowAndText(x, y);   
                 this.mc.y = y;
                 break;
             case 2:
+                this.createArrowAndText(x, y);
                 this.id = id;
                 this.mc.y = y;
                 this.birdBox = new p2.Body({mass: 1, position: [this.mc.x + this.mc.width / 2, this.mc.y + this.mc.height / 2]});
@@ -56,6 +62,10 @@ class Bird extends egret.DisplayObjectContainer {
                 // 3. 物理世界元素和动画世界元素保持同步
                 setInterval(() => {
                     this.mc.y = this.birdBox.position[1] - this.mc.height / 2;
+                    if (this.arrow) {
+                        this.arrow.y = this.mc.y - 10;
+                        this.text.y = this.mc.y - 30;
+                    }
                 }, 1000 * 1/60);
                 break;
         }
@@ -86,12 +96,29 @@ class Bird extends egret.DisplayObjectContainer {
         return this.type === 2 ? this.birdBox : null;
     }
 
+    // 创建配套的箭头
+    public createArrowAndText(x, y) {
+        this.text = new egret.TextField();
+        this.text.text = this.birdName;
+        this.text.textColor = 0x000000;
+        this.text.x = x;
+        this.text.y = y - 30;
+
+        this.arrow = new egret.Bitmap(RES.getRes('arrow_png'));     
+        this.arrow.x = x;
+        this.arrow.y = y - 10; 
+        this.main.addChild(this.text);
+        this.main.addChild(this.arrow);
+    }
+
     // 删除小鸟
     public removeBird(main) {
         if (this.type === 2) {
             main.world.removeBody(this.birdBox);            
             this.main.stage.removeEventListener(egret.TouchEvent.TOUCH_BEGIN, this.jump, this);
         }
+        this.main.removeChild(this.text);
+        this.main.removeChild(this.arrow);        
         this.parent.removeChild(this);
     }
 }

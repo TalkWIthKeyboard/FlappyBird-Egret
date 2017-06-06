@@ -11,15 +11,16 @@ var game_file_list = [
 	"libs/modules/physics/physics.js",
 	"libs/modules/socket.io/socket.io.js",
 	"polyfill/promise.js",
+	"bin-debug/Floor.js",
 	"bin-debug/BackgroundImage.js",
-	"bin-debug/Bird.js",
 	"bin-debug/Birds.js",
 	"bin-debug/Column.js",
 	"bin-debug/Columns.js",
-	"bin-debug/Floor.js",
+	"bin-debug/Bird.js",
 	"bin-debug/LoadingUI.js",
 	"bin-debug/Main.js",
 	"bin-debug/Score.js",
+	"bin-debug/TextInput.js",
 	"bin-debug/Websocket.js",
 	//----auto game_file_list end----
 ];

@@ -15,7 +15,7 @@ class Birds {
             let birdNum = objList[i].num;
             let birdX = parseFloat(objList[i].x);
             let birdY = parseFloat(objList[i].y);
-            let bird = new Bird(main, birdX, birdY, birdNum, 1);
+            let bird = new Bird(main, birdX, birdY, birdNum, objList[i].name, 1);
             bird.alpha = 0.5;            
 
             main.addChildAt(bird, 1);
@@ -55,7 +55,7 @@ class Birds {
 
     // 其他玩家进入游戏，添加小鸟
     public addBird(obj) {
-        let bird = new Bird(this.main, obj.x, obj.y, obj.num, 1);
+        let bird = new Bird(this.main, obj.x, obj.y, obj.num, obj.name, 1);
         bird.alpha = 0.5;
         this.main.addChildAt(bird, 1);
         this.birdMap.set(obj.num, bird);

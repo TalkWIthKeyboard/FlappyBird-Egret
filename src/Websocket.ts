@@ -3,13 +3,15 @@ class Websocket {
     private _socket;
     private _main;
     private numList = [0];
+    private name;
 
-    public constructor(main) {
+    public constructor(main, name) {
         this._main = main;
+        this.name = name;
         this._socket = new egret.WebSocket();
         this._socket.addEventListener(egret.ProgressEvent.SOCKET_DATA, this.onReceiveMessage, this);
         this._socket.addEventListener(egret.Event.CONNECT, this.onSocketOpen, this);
-        this._socket.connectByUrl("ws://10.0.1.55:5500/");
+        this._socket.connectByUrl("ws://localhost:5500/");
     }
 
     private workForColumnString(str: string) {
@@ -33,16 +35,16 @@ class Websocket {
                     let info = list[2].split('/');
                     for (let i = 0; i < info.length - 1; i++) {
                         let [num, position] = info[i].split(':');
-                        let [x, y] = position.split('|');
-                        ans.push({'num': num, 'x': x, 'y': y});
+                        let [x, y, name] = position.split('|');
+                        ans.push({'num': num, 'x': x, 'y': y, 'name': name});
                     }
                     this._main.startGame(ans);
                 } else {
                     let [num, position] = list[2].split(':');
-                    let [x, y] = position.split('|');
+                    let [x, y, name] = position.split('|');
                     // 数据收集开关
                     if (this._main.columnOpen) 
-                        this._main.birdMap.addBird({'num': num, 'x': x, 'y': y});
+                        this._main.birdMap.addBird({'num': num, 'x': x, 'y': y, 'name': name});
                 }
                 break;
             case 'dead':
@@ -74,8 +76,7 @@ class Websocket {
     public onSocketOpen() {
         let high = Math.floor(Math.random()*400);
         let width = Math.floor(Math.random()*200);
-        // let width = 200;
-        this.sendMessage(`start,${width},${high}`);
+        this.sendMessage(`start,${width},${high},${this.name}`);
     }
 
     public sendMessage(message) {
