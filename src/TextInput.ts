@@ -13,7 +13,7 @@ class TextInput {
         input.x = this.main.measured.stageW / 2 - input.width / 2;
         input.y = y;
         input.border = true;
-        input.borderColor = 0x999999;
+        input.borderColor = 0xFFFFFF;
         input.textAlign = egret.HorizontalAlign.CENTER;
         input.type = egret.TextFieldType.INPUT;
         this.input = input;

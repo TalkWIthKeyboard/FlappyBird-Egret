@@ -36,11 +36,11 @@ var Bird = (function (_super) {
                     .to({ y: main.measured.stageH / 2 - 80 }, 800);
                 break;
             case 1:
-                _this.createArrowAndText(x, y);
+                _this.createArrowAndText(x, y, 1);
                 _this.mc.y = y;
                 break;
             case 2:
-                _this.createArrowAndText(x, y);
+                _this.createArrowAndText(x, y, 2);
                 _this.id = id;
                 _this.mc.y = y;
                 _this.birdBox = new p2.Body({ mass: 1, position: [_this.mc.x + _this.mc.width / 2, _this.mc.y + _this.mc.height / 2] });
@@ -87,15 +87,19 @@ var Bird = (function (_super) {
         return this.type === 2 ? this.birdBox : null;
     };
     // 创建配套的箭头
-    Bird.prototype.createArrowAndText = function (x, y) {
+    Bird.prototype.createArrowAndText = function (x, y, type) {
         this.text = new egret.TextField();
         this.text.text = this.birdName;
-        this.text.textColor = 0x000000;
+        this.text.textColor = 0xFFFFFF;
         this.text.x = x;
         this.text.y = y - 30;
         this.arrow = new egret.Bitmap(RES.getRes('arrow_png'));
         this.arrow.x = x;
         this.arrow.y = y - 10;
+        if (type === 1) {
+            this.arrow.alpha = 0.5;
+            this.text.textColor = 0xCCCCCC;
+        }
         this.main.addChild(this.text);
         this.main.addChild(this.arrow);
     };

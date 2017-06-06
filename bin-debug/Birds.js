@@ -66,6 +66,8 @@ var Birds = (function () {
                 var birdY = parseFloat(position[i].y);
                 if (this.birdMap.has(birdNum)) {
                     var bird = this.birdMap.get(birdNum);
+                    egret.Tween.get(bird.arrow).to({ y: birdY - 10 }, 115);
+                    egret.Tween.get(bird.text).to({ y: birdY - 30 }, 115);
                     egret.Tween.get(bird.mc).to({ y: birdY }, 115);
                 }
             }

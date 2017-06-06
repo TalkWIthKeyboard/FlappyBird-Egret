@@ -45,11 +45,11 @@ class Bird extends egret.DisplayObjectContainer {
                     .to({y: main.measured.stageH / 2 - 80}, 800)
                 break;
             case 1:
-                this.createArrowAndText(x, y);   
+                this.createArrowAndText(x, y, 1);   
                 this.mc.y = y;
                 break;
             case 2:
-                this.createArrowAndText(x, y);
+                this.createArrowAndText(x, y, 2);
                 this.id = id;
                 this.mc.y = y;
                 this.birdBox = new p2.Body({mass: 1, position: [this.mc.x + this.mc.width / 2, this.mc.y + this.mc.height / 2]});
@@ -97,16 +97,20 @@ class Bird extends egret.DisplayObjectContainer {
     }
 
     // 创建配套的箭头
-    public createArrowAndText(x, y) {
+    public createArrowAndText(x, y, type) {
         this.text = new egret.TextField();
         this.text.text = this.birdName;
-        this.text.textColor = 0x000000;
+        this.text.textColor = 0xFFFFFF;
         this.text.x = x;
         this.text.y = y - 30;
 
         this.arrow = new egret.Bitmap(RES.getRes('arrow_png'));     
         this.arrow.x = x;
         this.arrow.y = y - 10; 
+        if (type === 1) {
+            this.arrow.alpha = 0.5;
+            this.text.textColor = 0xCCCCCC;
+        }
         this.main.addChild(this.text);
         this.main.addChild(this.arrow);
     }
