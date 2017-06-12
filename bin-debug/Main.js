@@ -151,7 +151,7 @@ var Main = (function (_super) {
         if (!this.hasWorld) {
             this.createWorld();
             // 创建名字输入框
-            this.textInput = new TextInput(this, '输入名字', 80, 430);
+            this.textInput = new TextInput(this, '输入名字', 'INPUT', 30, 240, 0, 430);
             setInterval(function () {
                 _this.world.step(60 / 1000);
             });
@@ -224,7 +224,7 @@ var Main = (function (_super) {
         this.columns.clear();
         this.columns = undefined;
         // 2.发送死亡消息
-        this.websocket.sendMessage("dead," + this.bird.id);
+        this.websocket.sendMessage("dead," + this.bird.id + "," + this.bird.birdName + "," + this.score);
         // 3.更新最佳得分   
         this.bestScore = this.score > this.bestScore ? this.score : this.bestScore;
         // 4.关闭地板动画
@@ -234,13 +234,13 @@ var Main = (function (_super) {
         // 6.关闭物理碰撞检测
         this.world.off("beginContact", null);
         // 7.新建gameOver页面元素
-        var gameOver = this.makeBitMap("text_game_over_png", 0, -200, 1.4, 1.4);
-        var scorePanel = this.makeBitMap("score_panel_png", 0, 0, 1.6, 1.6);
+        var gameOver = this.makeBitMap("text_game_over_png", 0, -260, 1.4, 1.4);
+        var scorePanel = this.makeBitMap("score_panel_2_png", 0, 50, 1.6, 1.6);
         var restartBtn = this.makeBitMap("button_play_png", 0, 200, 1.4, 1.4);
         // 8.清空顶端得分；更新最后得分与最佳得分图像
         this.scoreImg.clearNumber();
-        this.lastScoreImg.makeNumberImg(this.score);
-        this.bestScoreImg.makeNumberImg(this.bestScore);
+        // this.lastScoreImg.makeNumberImg(this.score);
+        // this.bestScoreImg.makeNumberImg(this.bestScore);
         restartBtn.touchEnabled = true;
         this.addChildAt(gameOver, 3);
         this.addChildAt(scorePanel, 2);

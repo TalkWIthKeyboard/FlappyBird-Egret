@@ -9,7 +9,7 @@ var Websocket = (function () {
         this._socket = new egret.WebSocket();
         this._socket.addEventListener(egret.ProgressEvent.SOCKET_DATA, this.onReceiveMessage, this);
         this._socket.addEventListener(egret.Event.CONNECT, this.onSocketOpen, this);
-        this._socket.connectByUrl("ws://10.0.1.55:5500/");
+        this._socket.connectByUrl("ws://115.159.1.222:5500/");
     }
     Websocket.prototype.workForColumnString = function (str) {
         var column = str.split('?');
@@ -45,8 +45,12 @@ var Websocket = (function () {
                 }
                 break;
             case 'dead':
-                if (list[1])
+                if (list[1] !== '')
                     this._main.birdMap.removeBird(list[1], true);
+                else {
+                    new TextInput(this._main, list[2], null, 240, 340, 0, 220);
+                    new TextInput(this._main, list[3], null, 240, 100, 250, 220);
+                }
                 break;
             case 'oldColumn':
                 if (this._main.columnOpen) {
@@ -59,7 +63,6 @@ var Websocket = (function () {
                 }
                 break;
             case 'position':
-                console.log(msg);
                 var ans = [];
                 var info = list[1].split('/');
                 for (var i = 0; i < info.length - 1; i++) {
