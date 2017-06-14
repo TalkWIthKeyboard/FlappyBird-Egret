@@ -250,6 +250,8 @@ var Main = (function (_super) {
             _this.removeChild(gameOver);
             _this.removeChild(scorePanel);
             _this.removeChild(restartBtn);
+            _this.showName.remove();
+            _this.showScore.remove();
             _this.floor.start();
             _this.lastScoreImg.clearNumber();
             _this.bestScoreImg.clearNumber();

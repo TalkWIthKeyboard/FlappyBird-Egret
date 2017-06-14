@@ -48,8 +48,8 @@ var Websocket = (function () {
                 if (list[1] !== '')
                     this._main.birdMap.removeBird(list[1], true);
                 else {
-                    new TextInput(this._main, list[2], null, 240, 340, 0, 220);
-                    new TextInput(this._main, list[3], null, 240, 100, 250, 220);
+                    this._main.showName = new TextInput(this._main, list[2], null, 240, 340, 0, 220);
+                    this._main.showScore = new TextInput(this._main, list[3], null, 240, 100, 250, 220);
                 }
                 break;
             case 'oldColumn':

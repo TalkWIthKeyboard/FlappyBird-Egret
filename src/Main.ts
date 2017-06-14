@@ -57,7 +57,8 @@ class Main extends egret.DisplayObjectContainer {
     private columnOpen = false;
     private textInput;
     private birdName;
-    private showScore;
+    private showName: TextInput;
+    private showScore: TextInput;
 
     public constructor() {
         super();
@@ -281,6 +282,8 @@ class Main extends egret.DisplayObjectContainer {
             this.removeChild(gameOver);
             this.removeChild(scorePanel);
             this.removeChild(restartBtn);
+            this.showName.remove();
+            this.showScore.remove();
             this.floor.start();
             this.lastScoreImg.clearNumber();
             this.bestScoreImg.clearNumber();
